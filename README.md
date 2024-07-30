@@ -1,4 +1,4 @@
-# Crivo Quadrático
+## Crivo Quadrático
 Este repositório contém a implementação do algoritmo do Crivo Quadrático, desenvolvido como parte do trabalho da disciplina de Álgebra A.
 
 ## Descrição
