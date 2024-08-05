@@ -10,6 +10,8 @@ mpz_class choose_non_residue(const mpz_class p) {
         if (ak_mod_n(i, m, p) == p - 1)
             return i;
     }
+
+    return 0
     
 }
 
