@@ -11,7 +11,7 @@ mpz_class choose_non_residue(const mpz_class p) {
             return i;
     }
 
-    return 0
+    return 0;
     
 }
 
