@@ -1,23 +1,17 @@
 #ifndef CIPOLLA_HPP
 #define CIPOLLA_HPP
 
-#include <iostream>
 #include <gmpxx.h>
 
-struct Cipolla {
-    mpz_class a, b, omega, p;
-    Cipolla(const mpz_class& _a, const mpz_class& _b, const mpz_class& _omega, const mpz_class& _p)
-        : a(_a), b(_b), omega(_omega), p(_p) {}
-
-    Cipolla operator*(const Cipolla& other) const {
-        mpz_class new_a = (a * other.a + b * other.b * omega) % p;
-        mpz_class new_b = (a * other.b + b * other.a) % p;
-        return Cipolla(new_a, new_b, omega, p);
-    }
+struct Complex {
+    mpz_class a, b;
+    Complex(mpz_class a = 0, mpz_class b = 0) : a(a), b(b) {}
 };
 
-mpz_class cipolla_iterative(const mpz_class& n, const mpz_class& p);
-Cipolla cipolla_recursive(const Cipolla& x, mpz_class n);
-mpz_class cipolla(const mpz_class& n, const mpz_class& p_input);
+Complex complexMul(const Complex& x, const Complex& y, const mpz_class& n, const mpz_class& w);
+
+Complex complexPow(Complex base, mpz_class exp, const mpz_class& n, const mpz_class& w);
+
+mpz_class cipolla(mpz_class n, mpz_class p);
 
 #endif

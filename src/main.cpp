@@ -52,14 +52,7 @@ int main()
     clock_gettime(CLOCK_MONOTONIC, &endTime);
 
     calculateTimeDifference(initTime, endTime, &diffTime);
-    std::cout << "Cipolla 2: " << ans2 << '\n';
-    std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
-    
-    clock_gettime(CLOCK_MONOTONIC, &initTime);
-    ans1 = cipolla_iterative(n, p);
-    clock_gettime(CLOCK_MONOTONIC, &endTime);
-
-    calculateTimeDifference(initTime, endTime, &diffTime);
-    std::cout << "Cipolla 1: " << ans1 << '\n';
+    std::cout << "Cipolla: " << ans2 << '\n';
     std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
 }
+
