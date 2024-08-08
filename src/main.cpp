@@ -26,24 +26,13 @@ int main()
     // Tonelli Shanks tests
 
     clock_gettime(CLOCK_MONOTONIC, &initTime);
-    mpz_class ans1 = tonelli_shanks(n, p);
+    mpz_class ans2 = tonelli_shanks(n, p);
     clock_gettime(CLOCK_MONOTONIC, &endTime);
 
     calculateTimeDifference(initTime, endTime, &diffTime);
 
-    std::cout << "Tonelli-Shanks 1: "  << ans1 << '\n';
+    std::cout << "Tonelli-Shanks: "  << ans2 << '\n';
     std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
-
-
-    clock_gettime(CLOCK_MONOTONIC, &initTime);
-    mpz_class ans2 = tonelli_shanks_iterative(n, p);
-    clock_gettime(CLOCK_MONOTONIC, &endTime);
-
-    calculateTimeDifference(initTime, endTime, &diffTime);
-
-    std::cout << "Tonelli-Shanks 2: "  << ans2 << '\n';
-    std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
-
 
     // Cipolla tests
     
