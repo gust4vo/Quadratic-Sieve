@@ -1,6 +1,6 @@
 # cc and flags
 CC = g++
-CXXFLAGS = -std=c++11 -g -Wall
+CXXFLAGS = -std=c++11 -g -Wall -DQUATRAITC_SIEVE
 LDFLAGS = -lgmp -lgmpxx
 #CXXFLAGS = -std=c++11 -O3 -Wall
 
@@ -21,7 +21,7 @@ $(shell mkdir -p $(OBJ_FOLDER))
 $(shell mkdir -p $(BIN_FOLDER))
 
 $(OBJ_FOLDER)%.o: $(SRC_FOLDER)%.cpp
-	$(CC) $(CXXFLAGS) -c $< -o $@ -I$(INCLUDE_FOLDER) ${LDFLAGS}
+	$(CC) $(CXXFLAGS) -c $< -o $@ -I$(INCLUDE_FOLDER) 
 
 all: $(OBJ)
 	$(CC) $(CXXFLAGS) -o $(BIN_FOLDER)$(TARGET) $(OBJ) ${LDFLAGS}

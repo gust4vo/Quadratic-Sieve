@@ -1,8 +1,10 @@
 #include <iostream>
 #include <ctime>
 #include <iomanip>
+#include <vector>
 #include "tonelli_shanks.hpp"
 #include "cipolla.hpp"
+#include "quadratic_sieve.hpp"
 
 void calculateTimeDifference(struct timespec t1, struct timespec t2, struct timespec * res)
 {
@@ -15,6 +17,7 @@ void calculateTimeDifference(struct timespec t1, struct timespec t2, struct time
     }
 }
 
+#ifdef TEST_TONELLI_CIPOLLAA
 
 int main()
 {
@@ -45,3 +48,27 @@ int main()
     std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
 }
 
+#endif
+
+#ifdef QUADRATIC_SIEVE
+
+int main()
+{
+    mpz_class n;
+    std::cin >> n;
+
+    std::vector<mpz_class> primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47};
+
+    struct timespec initTime, endTime, diffTime;
+
+    clock_gettime(CLOCK_MONOTONIC, &initTime);
+    quadratic_sieve(primes, n);
+    clock_gettime(CLOCK_MONOTONIC, &endTime);
+
+    calculateTimeDifference(initTime, endTime, &diffTime);
+
+    
+    std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
+}
+
+#endif
