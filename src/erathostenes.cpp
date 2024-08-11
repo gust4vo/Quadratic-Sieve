@@ -2,7 +2,7 @@
 
 void GetPrimes(std::vector<mpz_class>& primes, unsigned long int upperBound) {
     std::vector<bool> primes_bitset(upperBound + 1, true);
-    primes.resize(upperBound + 1, true);
+    primes.resize(upperBound);
 
     primes_bitset[0] = primes_bitset[1] = false; 
 
