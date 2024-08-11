@@ -7,6 +7,7 @@
 #include "cipolla.hpp"
 #include "quadratic_sieve.hpp"
 #include "erathostenes.hpp"
+#include "gauss_jordan.hpp"
 
 void calculateTimeDifference(struct timespec t1, struct timespec t2, struct timespec * res)
 {

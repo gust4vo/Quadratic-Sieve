@@ -3,6 +3,7 @@
 #include "cipolla.hpp"
 #include "mdc.hpp"
 #include "ak_mod_n.hpp"
+#include "gauss_jordan.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -16,7 +17,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
     std::vector<mpz_class> possible_smooth(possible_smooth_size);
 
-    for (size_t i = 0; i < possible_smooth_size/2; i++) {
+    for (size_t i = 0; i < possible_smooth_size; i++) {
         possible_smooth[i] = (x + i) * (x + i) % n;
     }
     
@@ -135,9 +136,9 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     for (auto index : smooth_index) {
         linear_system.push_back(pre_matriz[index]);
     }
-
+    
     // resolve the linear system                           
-    std::vector<unsigned long int> solution; // ex: [0 0 0 1 0 1]
+    std::vector<int> solution = gauss_jordan(linear_system);
 
     mpz_class a = 1, b = 1;
     for (size_t i = 0; i < smooth_index.size(); i++) {
@@ -155,4 +156,5 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
     mpz_class f1 = mdc(a - b, n);
     mpz_class f2 = mdc(a + b, n);
+    std::cout << f1 << " " << f2 << " " << std::endl;
 }
