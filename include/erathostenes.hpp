@@ -2,14 +2,8 @@
 #define ERATHOSTENES_HPP
 
 #include <vector>
+#include <gmpxx.h>
 
-class Erathostenes {
-private:
-    std::vector<bool> primes_bitset;
-
-public:
-    void GetPrimes(std::vector<unsigned long int>& primes, unsigned long int upperBound);
-};
-
+void GetPrimes(std::vector<mpz_class>& primes, unsigned long int upperBound);
 
 #endif

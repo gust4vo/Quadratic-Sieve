@@ -1,10 +1,10 @@
 #include "quadratic_sieve.hpp"
 #include "tonelli_shanks.hpp"
 #include "cipolla.hpp"
-#include "mmc.hpp"
+#include "mdc.hpp"
+#include "ak_mod_n.hpp"
 #include <cmath>
 #include <iostream>
-
 
 void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
@@ -12,16 +12,14 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
     if (x*x < n) x++;
 
-    mpz_class possible_smooth_size = primes.size() * 6;
+    size_t possible_smooth_size = primes.size() * 6;
 
-    std::vector<mpz_class> possible_smooth(possible_smooth_size.get_ui());
- 
-    for (size_t i = 1; i <= possible_smooth_size; i += 2) {
-        possible_smooth[i-1] = (x + i) * (x + i) % n;
-        possible_smooth[i] = (x - i) * (x - i) % n;
+    std::vector<mpz_class> possible_smooth(possible_smooth_size);
+
+    for (size_t i = 0; i < possible_smooth_size/2; i++) {
+        possible_smooth[i] = (x + i) * (x + i) % n;
     }
-
-         
+    
     std::vector<mpz_class> bases;
     bases.push_back(2);
 
@@ -38,7 +36,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         std::cout << '\n';
 
     std::vector<std::vector<unsigned long long>> pre_matriz(
-    possible_smooth_size.get_ui(), 
+    possible_smooth_size,
     std::vector<unsigned long long>(bases.size(), 0));
 
     mpz_class tonelli_ans, ans;
@@ -46,18 +44,14 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     tonelli_ans = cipolla(n, 2);
 
     ans = tonelli_ans - (x % 2);
-
-    // for (size_t k = 0; k < possible_smooth_size; k++)
-    //     std::cout << possible_smooth[k] << ' '; 
-    
-    // std::cout << '\n';
-    
-    for (size_t k = ans.get_ui(); k < possible_smooth_size; k += 2)
+    for (size_t k = ans.get_ui(); k < possible_smooth_size; k += 2) {
+        std::cout << k << " " << possible_smooth[k] << std::endl; 
         while(possible_smooth[k] % 2 == 0) 
         {
             possible_smooth[k] /= 2;
             pre_matriz[k][0]++;
         }
+    }
 
     // std::cout << "Toneli: " << tonelli_ans << " Begin: " << ans << " Prime :" << bases[0] << '\n';
 
@@ -65,7 +59,6 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     //     std::cout << possible_smooth[k] << ' ';
 
     // std::cout << '\n';
-    
     for (size_t i = 1; i < bases.size(); i++)
     {
         tonelli_ans = cipolla(n, bases[i]);
@@ -124,11 +117,42 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
         std::cout << '\n';
     }
-    
-        
-    
-    
-    
 
+    std::vector<size_t> smooth_index;
+    for (size_t i = 0, aux = 0; i < possible_smooth_size; i++) {
+        if (possible_smooth[i] == 1) {
+            smooth_index.push_back(i);
+            aux++;
+        }
+    }
 
+    if (smooth_index.size() < bases.size() + 1) {
+        std::cout << "There's no sufficient smooth numbers" << std::endl;
+        return;
+    }
+
+    std::vector<std::vector<unsigned long long>> linear_system;
+    for (auto index : smooth_index) {
+        linear_system.push_back(pre_matriz[index]);
+    }
+
+    // resolve the linear system                           
+    std::vector<unsigned long int> solution; // ex: [0 0 0 1 0 1]
+
+    mpz_class a = 1, b = 1;
+    for (size_t i = 0; i < smooth_index.size(); i++) {
+        if (solution[i]) {
+            for(size_t j = 0; j < bases.size(); j++) {
+                mpz_class p;
+                mpz_pow_ui(p.get_mpz_t(), bases[j].get_mpz_t(), pre_matriz[smooth_index[i]][j]);
+                a *= p;
+            }
+            b *= x + smooth_index[i];
+        }
+    }
+
+    mpz_sqrt(a.get_mpz_t(), a.get_mpz_t());
+
+    mpz_class f1 = mdc(a - b, n);
+    mpz_class f2 = mdc(a + b, n);
 }

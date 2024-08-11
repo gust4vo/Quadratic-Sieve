@@ -1,10 +1,12 @@
 #include <iostream>
 #include <ctime>
 #include <iomanip>
+#include <cmath>
 #include <vector>
 #include "tonelli_shanks.hpp"
 #include "cipolla.hpp"
 #include "quadratic_sieve.hpp"
+#include "erathostenes.hpp"
 
 void calculateTimeDifference(struct timespec t1, struct timespec t2, struct timespec * res)
 {
@@ -55,9 +57,12 @@ int main()
 int main()
 {
     mpz_class n;
+    std::vector<mpz_class> primes;
     std::cin >> n;
 
-    std::vector<mpz_class> primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47};
+    unsigned long int upperBound = exp(0.5 * sqrt(log(n.get_d())*log(log(n.get_d()))));
+
+    GetPrimes(primes, upperBound);
 
     struct timespec initTime, endTime, diffTime;
 
