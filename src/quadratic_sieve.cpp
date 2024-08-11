@@ -15,10 +15,14 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     mpz_class possible_smooth_size = primes.size() * 6;
 
     std::vector<mpz_class> possible_smooth(possible_smooth_size.get_ui());
-    
-    for (ssize_t i = 0; i < possible_smooth_size; i++)
-        possible_smooth[i] = (x + i)*(x + i) % n; 
-    
+ 
+    for (ssize_t i = 0; i < possible_smooth_size / 2; i++) 
+        possible_smooth[i] = (x + i)*(x + i) % n;
+
+    for (ssize_t i = 1; i <= possible_smooth_size / 2; i++) 
+        possible_smooth[i] = (x - i)*(x - i) % n;
+
+         
     std::vector<mpz_class> bases;
     bases.push_back(2);
 
