@@ -16,10 +16,10 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
     std::vector<mpz_class> possible_smooth(possible_smooth_size.get_ui());
  
-    for (ssize_t i = 0; i < possible_smooth_size / 2; i++) 
+    for (size_t i = 0; i < possible_smooth_size / 2; i++) 
         possible_smooth[i] = (x + i)*(x + i) % n;
 
-    for (ssize_t i = 1; i <= possible_smooth_size / 2; i++) 
+    for (size_t i = 1; i <= possible_smooth_size / 2; i++) 
         possible_smooth[i] = (x - i)*(x - i) % n;
 
          
@@ -28,7 +28,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
     std::cout << "\t\t\t\t";
 
-    for (ssize_t i = 0; i < primes.size(); i++)
+    for (size_t i = 0; i < primes.size(); i++)
     {
         if (mpz_legendre(n.get_mpz_t(), primes[i].get_mpz_t()) == 1)
         {
@@ -48,12 +48,12 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
     ans = tonelli_ans - (x % 2);
 
-    // for (ssize_t k = 0; k < possible_smooth_size; k++)
+    // for (size_t k = 0; k < possible_smooth_size; k++)
     //     std::cout << possible_smooth[k] << ' '; 
     
     // std::cout << '\n';
     
-    for (ssize_t k = ans.get_ui(); k < possible_smooth_size; k += 2)
+    for (size_t k = ans.get_ui(); k < possible_smooth_size; k += 2)
         while(possible_smooth[k] % 2 == 0) 
         {
             possible_smooth[k] /= 2;
@@ -62,12 +62,12 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
     // std::cout << "Toneli: " << tonelli_ans << " Begin: " << ans << " Prime :" << bases[0] << '\n';
 
-    // for (ssize_t k = 0; k < possible_smooth_size; k++)
+    // for (size_t k = 0; k < possible_smooth_size; k++)
     //     std::cout << possible_smooth[k] << ' ';
 
     // std::cout << '\n';
     
-    for (ssize_t i = 1; i < bases.size(); i++)
+    for (size_t i = 1; i < bases.size(); i++)
     {
         tonelli_ans = cipolla(n, bases[i]);
 
@@ -75,7 +75,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
         if (ans < 0) ans += bases[i];
         
-        for (ssize_t k = ans.get_ui(); k < possible_smooth_size; k += bases[i].get_ui())
+        for (size_t k = ans.get_ui(); k < possible_smooth_size; k += bases[i].get_ui())
         {
             while(possible_smooth[k] % bases[i] == 0)
             {
@@ -86,7 +86,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
         // std::cout << "Toneli: " << tonelli_ans << " Begin: " << ans << " Prime :" << bases[i] << '\n';
         
-        // for (ssize_t k = 0; k < possible_smooth_size; k++)
+        // for (size_t k = 0; k < possible_smooth_size; k++)
         //     std::cout << possible_smooth[k] << ' ';
 
         // std::cout << '\n';
@@ -95,7 +95,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
         if (ans < 0) ans += bases[i];
         
-        for (ssize_t k = ans.get_ui(); k < possible_smooth_size; k += bases[i].get_ui())
+        for (size_t k = ans.get_ui(); k < possible_smooth_size; k += bases[i].get_ui())
         {
             while(possible_smooth[k] % bases[i] == 0) 
             {
@@ -106,7 +106,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
         // std::cout << "Toneli: " << tonelli_ans << " Begin: " << ans << " Prime :" << bases[i] << '\n';
 
-        // for (ssize_t k = 0; k < possible_smooth_size; k++)
+        // for (size_t k = 0; k < possible_smooth_size; k++)
         //     std::cout << possible_smooth[k] << ' ';
 
         // std::cout << '\n';
@@ -114,11 +114,11 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         
     }
 
-    for (ssize_t i = 0; i < possible_smooth_size; i++)
+    for (size_t i = 0; i < possible_smooth_size; i++)
     {
         std::cout << '\t' << (x + i)*(x + i) << "\t"  << (x + i)*(x + i) % n << "\t" << possible_smooth[i] << "\t\t";
 
-        for (ssize_t j = 0; j < bases.size(); j++)
+        for (size_t j = 0; j < bases.size(); j++)
         {
             std::cout << pre_matriz[i][j] << ' ';
         }
