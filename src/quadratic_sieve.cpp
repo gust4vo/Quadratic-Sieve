@@ -24,17 +24,17 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     std::vector<mpz_class> bases;
     bases.push_back(2);
 
-    // std::cout << "\t\t\t\t";
+    std::cout << "\nBase: ";
 
     for (size_t i = 0; i < primes.size(); i++)
     {
         if (mpz_legendre(n.get_mpz_t(), primes[i].get_mpz_t()) == 1)
         {
             bases.push_back(primes[i]);
-            // std::cout << primes[i] << ' ';
+            std::cout << primes[i] << ' ';
         }
     }
-        // std::cout << '\n';
+        std::cout << '\n';
 
     std::vector<std::vector<unsigned long long>> pre_matriz(
     possible_smooth_size,
@@ -140,31 +140,37 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     }
     
     // resolve the linear system                           
-    std::vector<int> solution = gauss_jordan(linear_system);
+    std::vector<std::vector<int>> solutions = gauss_jordan(linear_system);
 
     std::cout <<  '\n';
 
-    mpz_class a = 1, b = 1;
-    for (size_t i = 0; i < smooth_index.size(); i++) {
-        if (solution[i]) {
-            for(size_t j = 0; j < bases.size(); j++) {
-                mpz_class p;
+    mpz_class a = 1, b = 1, aux = 1;
+    for(unsigned long int combinacao=0; combinacao < solutions.size(); combinacao++) {
+        std::cout << "Combinacao " << combinacao << " -> ";
+        for (size_t i = 0; i < smooth_index.size(); i++) {
+            if (solutions[combinacao][i]) {
+                for(size_t j = 0; j < bases.size(); j++) {
+                    mpz_class p;
 
-                // std::cout << pre_matriz[smooth_index[i]][j] << " ";
+                    // std::cout << pre_matriz[smooth_index[i]][j] << " ";
 
-                mpz_pow_ui(p.get_mpz_t(), bases[j].get_mpz_t(), pre_matriz[smooth_index[i]][j]);
-                a *= p;
+                    mpz_pow_ui(p.get_mpz_t(), bases[j].get_mpz_t(), pre_matriz[smooth_index[i]][j]);
+                    a *= p;
+                    aux *= p;
+                }
+
+                // std::cout << " -> " << aux << "\n";
+                aux = 1;
+                b *= x + smooth_index[i];
             }
-
-            // std::cout << "\n";
-            b *= x + smooth_index[i];
         }
+
+        mpz_sqrt(a.get_mpz_t(), a.get_mpz_t());
+
+        // std::cout << "a = " << a << " b = " << b  << '\n';
+        mpz_class f1 = mdc(b - a, n);
+        mpz_class f2 = mdc(a + b, n);
+        std::cout << "n = " << f1 << " * " << f2 << "\n";
+        a = 1, b = 1;
     }
-
-    mpz_sqrt(a.get_mpz_t(), a.get_mpz_t());
-
-    std::cout << a  << " " << b  << '\n';
-    mpz_class f1 = mdc(b - a, n);
-    mpz_class f2 = mdc(a + b, n);
-    std::cout << f1 << " " << f2 << " " << std::endl;
 }

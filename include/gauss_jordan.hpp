@@ -3,6 +3,6 @@
 
 #include <vector>
 
-std::vector<int> gauss_jordan(std::vector<std::vector<unsigned long long>>& matrix); 
+std::vector<std::vector<int>> gauss_jordan(std::vector<std::vector<unsigned long long>>& matrix); 
 
 #endif

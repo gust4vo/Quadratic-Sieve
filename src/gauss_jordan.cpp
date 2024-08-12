@@ -1,7 +1,7 @@
 #include "gauss_jordan.hpp"
 #include <iostream>
 
-std::vector<int> gauss_jordan(std::vector<std::vector<unsigned long long>>& matrix) {
+std::vector<std::vector<int>> gauss_jordan(std::vector<std::vector<unsigned long long>>& matrix) {
     int rows = matrix.size();
     int cols = matrix[0].size();
 
@@ -10,6 +10,7 @@ std::vector<int> gauss_jordan(std::vector<std::vector<unsigned long long>>& matr
             matrix[r][c] %= 2;
 
     std::vector<std::vector<int>> gaus_reg(rows, std::vector<int>(rows, 0));
+    std::vector<std::vector<int>> solution;
 
     int *indices = new int[rows];
 
@@ -81,32 +82,18 @@ std::vector<int> gauss_jordan(std::vector<std::vector<unsigned long long>>& matr
     }
 
 
-    // for (size_t i = 0; i < rows; i++)
-    // {
-    //     std::cout << indices[i] << "\t";
-    //     for (size_t j = 0; j < cols; j++)
-    //     {
-    //         std::cout << matrix[i][j] << " ";
-    //     }
-
-    //     std::cout << '\n';
-        
-    // }
-
-    // std::cout << '\n';
-
+    for (int i = 0; i < rows; i++) {
+        bool is_null_row = true;
+        for (int j = 0; j < cols; j++) {
+            if (matrix[i][j] != 0) {
+                is_null_row = false;
+                break;
+            }
+        }
+        if (is_null_row) {
+            solution.push_back(gaus_reg[indices[i]]);
+        }  
+    }
     
-
-    // std::cout << '\n';
-
-    // for (size_t i = 0; i < rows; i++)
-    // {
-    //     std::cout << gaus_reg[indices[rows - 1]][i] << " ";
-    // }
-    
-    // std::cout << "\n";
-
-    return gaus_reg[indices[rows - 1]];
-    
-
+    return solution;
 }
