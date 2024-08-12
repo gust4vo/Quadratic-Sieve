@@ -24,17 +24,17 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     std::vector<mpz_class> bases;
     bases.push_back(2);
 
-    std::cout << "\t\t\t\t";
+    // std::cout << "\t\t\t\t";
 
     for (size_t i = 0; i < primes.size(); i++)
     {
         if (mpz_legendre(n.get_mpz_t(), primes[i].get_mpz_t()) == 1)
         {
             bases.push_back(primes[i]);
-            std::cout << primes[i] << ' ';
+            // std::cout << primes[i] << ' ';
         }
     }
-        std::cout << '\n';
+        // std::cout << '\n';
 
     std::vector<std::vector<unsigned long long>> pre_matriz(
     possible_smooth_size,
@@ -46,7 +46,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
     ans = tonelli_ans - (x % 2);
     for (size_t k = ans.get_ui(); k < possible_smooth_size; k += 2) {
-        std::cout << k << " " << possible_smooth[k] << std::endl; 
+        // std::cout << k << " " << possible_smooth[k] << std::endl; 
         while(possible_smooth[k] % 2 == 0) 
         {
             possible_smooth[k] /= 2;
@@ -107,17 +107,17 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         
     }
 
-    for (size_t i = 0; i < possible_smooth_size; i++)
-    {
-        std::cout << '\t' << (x + i)*(x + i) << "\t"  << (x + i)*(x + i) % n << "\t" << possible_smooth[i] << "\t\t";
+    // for (size_t i = 0; i < possible_smooth_size; i++)
+    // {
+    //     std::cout << '\t' << (x + i)*(x + i) << "\t"  << (x + i)*(x + i) % n << "\t" << possible_smooth[i] << "\t\t";
 
-        for (size_t j = 0; j < bases.size(); j++)
-        {
-            std::cout << pre_matriz[i][j] << ' ';
-        }
+    //     for (size_t j = 0; j < bases.size(); j++)
+    //     {
+    //         std::cout << pre_matriz[i][j] << ' ';
+    //     }
 
-        std::cout << '\n';
-    }
+    //     std::cout << '\n';
+    // }
 
     std::vector<size_t> smooth_index;
     for (size_t i = 0, aux = 0; i < possible_smooth_size; i++) {
@@ -125,6 +125,8 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
             smooth_index.push_back(i);
             aux++;
         }
+
+        if (aux == bases.size() + 1) break;
     }
 
     if (smooth_index.size() < bases.size() + 1) {
@@ -140,21 +142,29 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     // resolve the linear system                           
     std::vector<int> solution = gauss_jordan(linear_system);
 
+    std::cout <<  '\n';
+
     mpz_class a = 1, b = 1;
     for (size_t i = 0; i < smooth_index.size(); i++) {
         if (solution[i]) {
             for(size_t j = 0; j < bases.size(); j++) {
                 mpz_class p;
+
+                // std::cout << pre_matriz[smooth_index[i]][j] << " ";
+
                 mpz_pow_ui(p.get_mpz_t(), bases[j].get_mpz_t(), pre_matriz[smooth_index[i]][j]);
                 a *= p;
             }
+
+            // std::cout << "\n";
             b *= x + smooth_index[i];
         }
     }
 
     mpz_sqrt(a.get_mpz_t(), a.get_mpz_t());
 
-    mpz_class f1 = mdc(a - b, n);
+    std::cout << a  << " " << b  << '\n';
+    mpz_class f1 = mdc(b - a, n);
     mpz_class f2 = mdc(a + b, n);
     std::cout << f1 << " " << f2 << " " << std::endl;
 }

@@ -57,11 +57,13 @@ int main()
 
 int main()
 {
+
+    
     mpz_class n;
     std::vector<mpz_class> primes;
     std::cin >> n;
 
-    unsigned long int upperBound = exp(0.5 * sqrt(log(n.get_d())*log(log(n.get_d()))));
+    unsigned long int upperBound = exp(1 * sqrt(log(n.get_d())*log(log(n.get_d()))));
 
     GetPrimes(primes, upperBound);
 
@@ -75,6 +77,11 @@ int main()
 
     
     std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
+
+//     std::vector<std::vector<unsigned long long>> matriz = {{0, 1, 1, 0}, {1, 0, 1, 0}, {1, 1, 0, 1}, {1, 1, 1, 0}, {0, 1, 0, 1}};
+//     std::vector<int> sol = gauss_jordan(matriz);
+//     // for(int i : sol) std::cout << i << " ";
+//     // std::cout << "\n";
 }
 
 #endif
