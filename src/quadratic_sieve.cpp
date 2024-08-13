@@ -25,15 +25,15 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
 
     mpz_class tonelli_ans, ans;
     size_t smooth_count = 0;
-    std::vector<size_t> index(bases.size()+1);
-    std::vector<mpz_class> smooth_numbers(bases.size()+1);
+    std::vector<mpz_class> smooth_numbers(bases.size()+1), smooth_residue(bases.size()+1);
     mpz_class start = x; 
+    
     while (smooth_count < (bases.size() + 1)) {
         std::vector<mpz_class> possible_smooth(primes.size()*6), sieve_list(primes.size()*6);
 
         for (size_t i = 0; i < primes.size()*6; i++) {
-            possible_smooth[i] = (start + i) * (start + i) % n; 
-            sieve_list[i] = possible_smooth[i];
+            possible_smooth[i] = (start + i); 
+            sieve_list[i] = (possible_smooth[i] * possible_smooth[i]) % n;
         }
 
         tonelli_ans = cipolla(n, 2);
@@ -68,7 +68,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         for (size_t i = 0; i < primes.size()*6; i++) {
             if (sieve_list[i] == 1) {
                 smooth_numbers[smooth_count] = possible_smooth[i];
-                index[smooth_count] = i + (start.get_ui() - x.get_ui());
+                smooth_residue[smooth_count] = (possible_smooth[i] * possible_smooth[i]) % n;
                 smooth_count++;
                 std::cout << smooth_count << " " << bases.size() + 1 << std::endl; 
                 if (smooth_count == bases.size() + 1) break;
@@ -78,31 +78,26 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         start += primes.size()*6;
     }
 
-    std::vector<std::vector<int>> linear_system(smooth_count, std::vector<int>(bases.size(), 0));
     std::vector<std::vector<int>> exponents(smooth_count, std::vector<int>(bases.size(), 0));
 
     for(size_t i = 0; i < smooth_count; i++) {
-        mpz_class aux = smooth_numbers[i];
+        mpz_class aux = smooth_residue[i];
         for(size_t j = 0; j < bases.size(); j++) {
             while (aux % bases[j] == 0) {
                 aux /= bases[j];
-                linear_system[i][j] = !linear_system[i][j];
                 exponents[i][j]++;
             }
         }
     }
     // resolve the linear system                           
-    std::vector<std::vector<int>> solutions = gauss_jordan(linear_system);
+    std::vector<std::vector<int>> solutions = gauss_jordan(exponents);
     mpz_class a = 1, b = 1;
+
     for(size_t combination=0; combination < solutions.size(); combination++) {
         for (size_t i = 0; i < smooth_count; i++) {
             if (solutions[combination][i]) {
-                for(size_t j = 0; j < bases.size(); j++) {
-                    mpz_class p;
-                    mpz_pow_ui(p.get_mpz_t(), bases[j].get_mpz_t(), exponents[i][j]);
-                    a *= p;
-                }
-                b *= x + index[i];
+                a *= smooth_residue[i];
+                b *= smooth_numbers[i];
             }
         }
 

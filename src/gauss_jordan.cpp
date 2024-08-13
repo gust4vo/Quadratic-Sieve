@@ -5,9 +5,11 @@ std::vector<std::vector<int>> gauss_jordan(std::vector<std::vector<int>>& matrix
     int rows = matrix.size();
     int cols = matrix[0].size();
 
+    for (int r = 0; r < rows; r++) 
+        for (int c = 0; c < cols; c++)
+            matrix[r][c] %= 2;
+
     std::vector<std::vector<int>> gaus_reg(rows, std::vector<int>(rows, 0));
-    std::vector<std::vector<int>> solution;
-    std::vector<bool> null_rows(rows, true);
 
     int *indices = new int[rows];
 
@@ -30,27 +32,85 @@ std::vector<std::vector<int>> gauss_jordan(std::vector<std::vector<int>>& matrix
         
         if (pivot_row == -1)
             continue; 
+
+        // for (size_t i = 0; i < rows; i++)
+        // {
+        //     std::cout << indices[i] << "\t";
+        //     for (size_t j = 0; j < cols; j++)
+        //     {
+        //         std::cout << matrix[i][j] << " ";
+        //     }
+
+        //     std::cout << '\n';
+            
+        // }
+
+        // std::cout << '\n';
         
         if(pivot_row != pivot_qtd) {
             std::swap(matrix[pivot_qtd], matrix[pivot_row]);
             std::swap(indices[pivot_qtd], indices[pivot_row]);
         }
 
+        // for (size_t i = 0; i < rows; i++)
+        // {
+        //     std::cout << indices[i] << "\t";
+        //     for (size_t j = 0; j < cols; j++)
+        //     {
+        //         std::cout << matrix[i][j] << " ";
+        //     }
+
+        //     std::cout << '\n';
+            
+        // }
+
+        // std::cout << '\n';
+
         for (int row = pivot_qtd + 1; row < rows; row++) {
             if (matrix[row][col] == 1) {                
+
                 for (int c = 0; c < cols; c++) {
                     matrix[row][c] ^= matrix[pivot_qtd][c]; 
                     gaus_reg[indices[row]][c] ^= gaus_reg[indices[pivot_qtd]][c];
                 }
             }
         }
-        null_rows[pivot_qtd] = false;
+
+        // gaus_reg[indices[pivot_qtd]].clear();
+        // gaus_reg[indices[pivot_qtd]].shrink_to_fit();
         pivot_qtd++;
     }
 
 
-    for (int i=0; i < rows; i++)
-        if(null_rows[i]) solution.push_back(gaus_reg[indices[i]]);
+    // for (size_t i = 0; i < rows; i++)
+    // {
+    //     std::cout << indices[i] << "\t";
+    //     for (size_t j = 0; j < cols; j++)
+    //     {
+    //         std::cout << matrix[i][j] << " ";
+    //     }
+
+    //     std::cout << '\n';
+        
+    // }
+
+    // std::cout << '\n';
+
+    
+
+    // std::cout << '\n';
+
+    // for (size_t i = 0; i < rows; i++)
+    // {
+    //     std::cout << gaus_reg[indices[rows - 1]][i] << " ";
+    // }
+    
+    // std::cout << "\n";
+
+    std::vector<std::vector<int>> solution(rows - pivot_qtd);
+
+    for (int i = 0; i < rows - pivot_qtd; i++)
+        solution[i] = (gaus_reg[indices[i + pivot_qtd]]);
 
     return solution;
 }
