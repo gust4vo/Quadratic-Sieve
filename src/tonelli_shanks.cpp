@@ -4,6 +4,8 @@
 mpz_class tonelli_shanks(const mpz_class& a, const mpz_class& p)
 {
 
+    if (p == 2) return a % 2;
+
     mpz_class k = (p - 1) >> 1;
 
     if(ak_mod_n(a, k, p) != 1) {
