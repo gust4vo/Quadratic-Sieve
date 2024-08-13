@@ -7,6 +7,10 @@
 #include <cmath>
 #include <iostream>
 
+void sieving(std::vector<mpz_class> possible_smooth) {
+
+}
+
 void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     mpz_class x = (std::sqrt(n));
 
@@ -77,33 +81,37 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
                 pre_matriz[k][i]++;
             }
         }  
-   
     }
 
     std::vector<size_t> smooth_index;
+    std::vector<std::vector<unsigned long long>> linear_system;
+    
     for (size_t i = 0, aux = 0; i < possible_smooth_size; i++) {
-        if (possible_smooth[i] == 1) {
+        if (possible_smooth[i] == 1 && aux < bases.size() + 1) {
             smooth_index.push_back(i);
+            linear_system.push_back(pre_matriz[i]);
             aux++;
         }
 
-        if (aux == bases.size() + 1) break;
+        else
+        {
+            pre_matriz[i].clear();
+            pre_matriz[i].shrink_to_fit();
+        }
     }
+
+    possible_smooth.clear();
+    possible_smooth.shrink_to_fit();
 
     if (smooth_index.size() < bases.size() + 1) {
         std::cout << "There's no sufficient smooth numbers" << std::endl;
         return;
     }
-
-    std::vector<std::vector<unsigned long long>> linear_system;
-    for (auto index : smooth_index) {
-        linear_system.push_back(pre_matriz[index]);
-    }
     
     // resolve the linear system                           
     std::vector<std::vector<int>> solutions = gauss_jordan(linear_system);
 
-
+    std::cout << "Oi\n";
     mpz_class a = 1, b = 1;
     for(size_t combination=0; combination < solutions.size(); combination++) {
         for (size_t i = 0; i < smooth_index.size(); i++) {
