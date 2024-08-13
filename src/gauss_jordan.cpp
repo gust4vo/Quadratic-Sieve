@@ -1,13 +1,9 @@
 #include "gauss_jordan.hpp"
 #include <iostream>
 
-std::vector<std::vector<int>> gauss_jordan(std::vector<std::vector<unsigned long long>>& matrix) {
+std::vector<std::vector<int>> gauss_jordan(std::vector<std::vector<int>>& matrix) {
     int rows = matrix.size();
     int cols = matrix[0].size();
-
-    for (int r = 0; r < rows; r++) 
-        for (int c = 0; c < cols; c++)
-            matrix[r][c] %= 2;
 
     std::vector<std::vector<int>> gaus_reg(rows, std::vector<int>(rows, 0));
     std::vector<std::vector<int>> solution;

@@ -11,14 +11,6 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     mpz_class x = (std::sqrt(n));
 
     if (x*x < n) x++;   
-
-    size_t possible_smooth_size = primes.size()*6;
-
-    std::vector<mpz_class> possible_smooth(possible_smooth_size);
-
-    for (size_t i = 0; i < possible_smooth_size; i++) {
-        possible_smooth[i] = (x + i) * (x + i) % n;
-    }
     
     std::vector<mpz_class> bases;
     bases.push_back(2);
@@ -31,95 +23,92 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         }
     }
 
-    std::vector<std::vector<unsigned long long>> pre_matriz(
-    possible_smooth_size,
-    std::vector<unsigned long long>(bases.size(), 0));
-
     mpz_class tonelli_ans, ans;
-    
-    tonelli_ans = cipolla(n, 2);
+    size_t smooth_count = 0;
+    std::vector<size_t> index(bases.size()+1);
+    std::vector<mpz_class> smooth_numbers(bases.size()+1);
+    mpz_class start = x; 
+    while (smooth_count < (bases.size() + 1)) {
+        std::vector<mpz_class> possible_smooth(primes.size()*6), sieve_list(primes.size()*6);
 
-    ans = tonelli_ans - (x % 2);
-    for (size_t k = ans.get_ui(); k < possible_smooth_size; k += 2) {
-        while(possible_smooth[k] % 2 == 0) 
-        {
-            possible_smooth[k] /= 2;
-            pre_matriz[k][0]++;
+        for (size_t i = 0; i < primes.size()*6; i++) {
+            possible_smooth[i] = (start + i) * (start + i) % n; 
+            sieve_list[i] = possible_smooth[i];
         }
-    }
 
-    for (size_t i = 1; i < bases.size(); i++)
-    {
-        tonelli_ans = cipolla(n, bases[i]);
-
-        ans = (tonelli_ans - (x % bases[i])) % bases[i]; 
-
-        if (ans < 0) ans += bases[i];
-        
-        for (size_t k = ans.get_ui(); k < possible_smooth_size; k += bases[i].get_ui())
-        {
-            while(possible_smooth[k] % bases[i] == 0)
-            {
-                possible_smooth[k] /= bases[i];
-                pre_matriz[k][i]++;
-            } 
-        }
-    
-        ans = ((bases[i] - tonelli_ans) - (x % bases[i])) % bases[i];
-
-        if (ans < 0) ans += bases[i];
-        
-        for (size_t k = ans.get_ui(); k < possible_smooth_size; k += bases[i].get_ui())
-        {
-            while(possible_smooth[k] % bases[i] == 0) 
-            {
-                possible_smooth[k] /= bases[i];
-                pre_matriz[k][i]++;
+        tonelli_ans = cipolla(n, 2);
+        ans = tonelli_ans - (start % 2);
+        for (size_t k = ans.get_ui(); k < primes.size()*6; k += 2) {
+            while (sieve_list[k] % 2 == 0) {
+                sieve_list[k] /= 2;
             }
-        }  
-   
-    }
-
-    std::vector<size_t> smooth_index;
-    for (size_t i = 0, aux = 0; i < possible_smooth_size; i++) {
-        if (possible_smooth[i] == 1) {
-            smooth_index.push_back(i);
-            aux++;
         }
 
-        if (aux == bases.size() + 1) break;
+        for (size_t i = 1; i < bases.size(); i++) {
+            tonelli_ans = cipolla(n, bases[i]);
+            ans = (tonelli_ans - (start % bases[i])) % bases[i];
+            if (ans < 0) ans += bases[i];
+
+            for (size_t k = ans.get_ui(); k < primes.size()*6; k += bases[i].get_ui()) {
+                while (sieve_list[k] % bases[i] == 0) {
+                    sieve_list[k] /= bases[i];
+                }
+            }
+
+            ans = ((bases[i] - tonelli_ans) - (start % bases[i])) % bases[i];
+            if (ans < 0) ans += bases[i];
+
+            for (size_t k = ans.get_ui(); k < primes.size()*6; k += bases[i].get_ui()) {
+                while (sieve_list[k] % bases[i] == 0) {
+                    sieve_list[k] /= bases[i];
+                }
+            }
+        }
+
+        for (size_t i = 0; i < primes.size()*6; i++) {
+            if (sieve_list[i] == 1) {
+                smooth_numbers[smooth_count] = possible_smooth[i];
+                index[smooth_count] = i + (start.get_ui() - x.get_ui());
+                smooth_count++;
+                std::cout << smooth_count << " " << bases.size() + 1 << std::endl; 
+                if (smooth_count == bases.size() + 1) break;
+            }
+        }
+
+        start += primes.size()*6;
     }
 
-    if (smooth_index.size() < bases.size() + 1) {
-        std::cout << "There's no sufficient smooth numbers" << std::endl;
-        return;
-    }
+    std::vector<std::vector<int>> linear_system(smooth_count, std::vector<int>(bases.size(), 0));
+    std::vector<std::vector<int>> exponents(smooth_count, std::vector<int>(bases.size(), 0));
 
-    std::vector<std::vector<unsigned long long>> linear_system;
-    for (auto index : smooth_index) {
-        linear_system.push_back(pre_matriz[index]);
+    for(size_t i = 0; i < smooth_count; i++) {
+        mpz_class aux = smooth_numbers[i];
+        for(size_t j = 0; j < bases.size(); j++) {
+            while (aux % bases[j] == 0) {
+                aux /= bases[j];
+                linear_system[i][j] = !linear_system[i][j];
+                exponents[i][j]++;
+            }
+        }
     }
-    
     // resolve the linear system                           
     std::vector<std::vector<int>> solutions = gauss_jordan(linear_system);
-
-
     mpz_class a = 1, b = 1;
     for(size_t combination=0; combination < solutions.size(); combination++) {
-        for (size_t i = 0; i < smooth_index.size(); i++) {
+        for (size_t i = 0; i < smooth_count; i++) {
             if (solutions[combination][i]) {
                 for(size_t j = 0; j < bases.size(); j++) {
                     mpz_class p;
-                    mpz_pow_ui(p.get_mpz_t(), bases[j].get_mpz_t(), pre_matriz[smooth_index[i]][j]);
+                    mpz_pow_ui(p.get_mpz_t(), bases[j].get_mpz_t(), exponents[i][j]);
                     a *= p;
                 }
-                b *= x + smooth_index[i];
+                b *= x + index[i];
             }
         }
 
         mpz_sqrt(a.get_mpz_t(), a.get_mpz_t());
 
-        if(a%n != b%n) break;
+        if((b - a) % n != 0 && (a + b) % n != 0) break;
 
         a = 1, b = 1;
     }

@@ -61,11 +61,11 @@ int main()
     std::vector<mpz_class> primes;
     std::cin >> n;
 
-    unsigned long int upperBound = exp(sqrt(log(n.get_d())*log(log(n.get_d()))));
+    unsigned long int upperBound = exp(0.58*sqrt(log(n.get_d())*log(log(n.get_d()))));
     
     GetPrimes(primes, upperBound);
     struct timespec initTime, endTime, diffTime;
-
+    std::cout << primes.size() << std::endl;
     clock_gettime(CLOCK_MONOTONIC, &initTime);
     quadratic_sieve(primes, n);
     clock_gettime(CLOCK_MONOTONIC, &endTime);
