@@ -4,7 +4,7 @@
 #include <gmpxx.h>
 #include <vector>
 
-void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n);
+void quadratic_sieve(const std::vector<mpz_class> &primes, const mpz_class &n);
 
 
 #endif

@@ -12,6 +12,6 @@ Complex complexMul(const Complex& x, const Complex& y, const mpz_class& n, const
 
 Complex complexPow(Complex base, mpz_class exp, const mpz_class& n, const mpz_class& w);
 
-mpz_class cipolla(mpz_class n, mpz_class p);
+mpz_class cipolla(const mpz_class &n, const mpz_class &p);
 
 #endif

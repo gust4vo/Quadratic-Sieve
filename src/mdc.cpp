@@ -1,6 +1,6 @@
 #include "mdc.hpp"
 
-mpz_class mdc(mpz_class a, mpz_class b) {
+mpz_class mdc(const mpz_class &a, const mpz_class &b) {
     // Description: computes the gdc of two numbers, a, b
     // Input : A, B
     // Output gdc(a,b)

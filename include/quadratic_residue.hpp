@@ -4,6 +4,6 @@
 
 #include <gmpxx.h>
 
-mpz_class quadratic_residue(mpz_class n, mpz_class p);
+mpz_class quadratic_residue(const mpz_class &a, const mpz_class &p);
 
 #endif

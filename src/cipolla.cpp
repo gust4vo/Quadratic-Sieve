@@ -17,7 +17,7 @@ Complex complexPow(Complex base, mpz_class exp, const mpz_class& n, const mpz_cl
     return result;
 }
 
-mpz_class cipolla(mpz_class n, mpz_class p) {
+mpz_class cipolla(const mpz_class &n, const mpz_class &p) {
 
     mpz_class a = 0, w;
     while (true) {

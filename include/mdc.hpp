@@ -3,6 +3,6 @@
 
 #include <gmpxx.h>
 
-mpz_class mdc(mpz_class a, mpz_class b);
+mpz_class mdc(const mpz_class &a, const mpz_class &b);
 
 #endif

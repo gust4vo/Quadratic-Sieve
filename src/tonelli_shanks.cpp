@@ -1,21 +1,11 @@
 #include "tonelli_shanks.hpp"
 #include "ak_mod_n.hpp"
 
-mpz_class tonelli_shanks(const mpz_class& a, const mpz_class& p)
+mpz_class tonelli_shanks(const mpz_class& a, const mpz_class& p, const mpz_class &q, const mpz_class &s)
 {
-    mpz_class k = (p - 1) >> 1;
-
-    mpz_class s = 0;
-    mpz_class q = p-1;
-
-    // encontrar expoente
-    while (q % 2 == 0) {
-        q >>= 1;
-        s++;
-    }
-
     // encontrar z
     mpz_class z = 2;
+    mpz_class k = (p - 1) >> 1;
     while (ak_mod_n(z, k, p) == 1) {
         z++;
     }
