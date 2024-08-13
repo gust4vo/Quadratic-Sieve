@@ -19,13 +19,6 @@ Complex complexPow(Complex base, mpz_class exp, const mpz_class& n, const mpz_cl
 
 mpz_class cipolla(mpz_class n, mpz_class p) {
 
-    if (p == 2) return n % 2;
-    
-    if (n == 0) return 0;
-    if (mpz_legendre(n.get_mpz_t(), p.get_mpz_t()) != 1) {
-        throw std::invalid_argument("No solution exists");
-    }
-
     mpz_class a = 0, w;
     while (true) {
         a++;
