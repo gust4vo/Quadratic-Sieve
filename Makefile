@@ -1,6 +1,6 @@
 # cc and flags
 CC = g++
-CXXFLAGS = -std=c++11 -g -Wall -DQUATRAITC_SIEVE
+CXXFLAGS = -std=c++11 -g -fopenmp -Wall -DQUATRAITC_SIEVE
 LDFLAGS = -lgmp -lgmpxx
 #CXXFLAGS = -std=c++11 -O3 -Wall
 

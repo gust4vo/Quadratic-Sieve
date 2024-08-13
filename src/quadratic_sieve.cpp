@@ -6,24 +6,125 @@
 #include "gauss_jordan.hpp"
 #include <cmath>
 #include <iostream>
+#include <omp.h>
+#include <utility>
 
-void sieving(std::vector<mpz_class> possible_smooth) {
 
+void sieving(std::vector<mpz_class> &bases, mpz_class &n, std::vector<std::pair<mpz_class, mpz_class>> &smooth_index, std::vector<std::vector<unsigned long long>> &matrix) {
+
+    mpz_class x = (std::sqrt(n));
+
+    if (x*x < n) x++;
+
+    mpz_class tonelli_ans, ans;
+    
+    tonelli_ans = cipolla(n, 2);
+    ans = tonelli_ans - (x % 2);
+
+    std::vector<std::pair<mpz_class, mpz_class>> possible_smooth(bases.size());
+    possible_smooth[0] = {ans, ans};
+
+    for (size_t i = 1; i < bases.size(); i++)
+    {
+        tonelli_ans = cipolla(n, bases[i]);
+
+        ans = (tonelli_ans - (x % bases[i])) % bases[i]; 
+
+        if (ans < 0) ans += bases[i];
+        
+        possible_smooth[i].first = ans;
+    
+        ans = ((bases[i] - tonelli_ans) - (x % bases[i])) % bases[i];
+
+        if (ans < 0) ans += bases[i];
+        
+        possible_smooth[i].second = ans;
+    }
+    
+
+    
+    // omp_set_num_threads(omp_get_max_threads());  // Ajuste o número de threads, por exemplo, para 4
+
+    bool done = false;
+    
+   
+    
+
+     size_t offset = 0;
+
+    while(!done)
+    {
+
+        #pragma omp parallel
+        {
+            
+            #pragma omp for
+            for (size_t i = 0; i < bases.size(); i++)
+            {
+                if (!done)
+                {
+                    std::pair<mpz_class, mpz_class> smooth((x + i + offset), (x + i + offset) * (x + i + offset) % n);
+                    mpz_class smooth_residue = smooth.second;
+
+                    std::vector<unsigned long long> exp(bases.size(), 0);
+
+                    for (size_t j = 0; j < bases.size(); j++)
+                    {
+                        if (possible_smooth[j].first == (i + offset) % bases[j] || possible_smooth[j].second == (i + offset) % bases[j])
+                        {
+                            while (smooth_residue % bases[j] == 0)
+                            {
+                                smooth_residue /= bases[j];
+                                exp[j]++;
+                            }
+                        }
+                    }
+
+                    if (smooth_residue == 1)
+                    {
+                        #pragma omp critical
+                        {
+                            if (smooth_index.size() < bases.size() + 1)
+                            {
+                                smooth_index.push_back(smooth);
+                                matrix.push_back(exp);
+
+                                if (smooth_index.size() >= bases.size() + 1)
+                                {
+                                    done = true;
+                                    #pragma omp flush(done)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            std::cout << "Thread " << omp_get_thread_num() << " terminou.\n";
+        }
+
+        offset += bases.size();
+        std::cout << "Todas as threads terminaram.\n";
+    }
+
+    
+    
+
+    // #pragma omp barrier
+
+
+    // omp_set_num_threads(1);
+
+
+    // smooth_index.resize(bases.size() +1);
+    // matrix.resize(bases.size() +1);
+        
+
+    
 }
 
 void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
-    mpz_class x = (std::sqrt(n));
 
-    if (x*x < n) x++;   
-
-    size_t possible_smooth_size = primes.size()*6;
-
-    std::vector<mpz_class> possible_smooth(possible_smooth_size);
-
-    for (size_t i = 0; i < possible_smooth_size; i++) {
-        possible_smooth[i] = (x + i) * (x + i) % n;
-    }
-    
     std::vector<mpz_class> bases;
     bases.push_back(2);
 
@@ -35,104 +136,46 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         }
     }
 
-    std::vector<std::vector<unsigned long long>> pre_matriz(
-    possible_smooth_size,
-    std::vector<unsigned long long>(bases.size(), 0));
-
-    mpz_class tonelli_ans, ans;
-    
-    tonelli_ans = cipolla(n, 2);
-
-    ans = tonelli_ans - (x % 2);
-    for (size_t k = ans.get_ui(); k < possible_smooth_size; k += 2) {
-        while(possible_smooth[k] % 2 == 0) 
-        {
-            possible_smooth[k] /= 2;
-            pre_matriz[k][0]++;
-        }
-    }
-
-    for (size_t i = 1; i < bases.size(); i++)
-    {
-        tonelli_ans = cipolla(n, bases[i]);
-
-        ans = (tonelli_ans - (x % bases[i])) % bases[i]; 
-
-        if (ans < 0) ans += bases[i];
-        
-        for (size_t k = ans.get_ui(); k < possible_smooth_size; k += bases[i].get_ui())
-        {
-            while(possible_smooth[k] % bases[i] == 0)
-            {
-                possible_smooth[k] /= bases[i];
-                pre_matriz[k][i]++;
-            } 
-        }
-    
-        ans = ((bases[i] - tonelli_ans) - (x % bases[i])) % bases[i];
-
-        if (ans < 0) ans += bases[i];
-        
-        for (size_t k = ans.get_ui(); k < possible_smooth_size; k += bases[i].get_ui())
-        {
-            while(possible_smooth[k] % bases[i] == 0) 
-            {
-                possible_smooth[k] /= bases[i];
-                pre_matriz[k][i]++;
-            }
-        }  
-    }
-
-    std::vector<size_t> smooth_index;
+    std::vector<std::pair<mpz_class, mpz_class>> smooth_index;
+    smooth_index.reserve(bases.size() + 1);
     std::vector<std::vector<unsigned long long>> linear_system;
-    
-    for (size_t i = 0, aux = 0; i < possible_smooth_size; i++) {
-        if (possible_smooth[i] == 1 && aux < bases.size() + 1) {
-            smooth_index.push_back(i);
-            linear_system.push_back(pre_matriz[i]);
-            aux++;
-        }
+    linear_system.reserve(bases.size() + 1);
 
-        else
-        {
-            pre_matriz[i].clear();
-            pre_matriz[i].shrink_to_fit();
-        }
-    }
-
-    possible_smooth.clear();
-    possible_smooth.shrink_to_fit();
-
-    if (smooth_index.size() < bases.size() + 1) {
-        std::cout << "There's no sufficient smooth numbers" << std::endl;
-        return;
-    }
+    sieving(bases, n, smooth_index, linear_system);
     
     // resolve the linear system                           
+
+
     std::vector<std::vector<int>> solutions = gauss_jordan(linear_system);
 
-    std::cout << "Oi\n";
-    mpz_class a = 1, b = 1;
-    for(size_t combination=0; combination < solutions.size(); combination++) {
+
+    mpz_class a, b;
+    for(size_t combination=0; combination < solutions.size(); combination++) {       
+        a = 1, b = 1;
+
         for (size_t i = 0; i < smooth_index.size(); i++) {
             if (solutions[combination][i]) {
-                for(size_t j = 0; j < bases.size(); j++) {
-                    mpz_class p;
-                    mpz_pow_ui(p.get_mpz_t(), bases[j].get_mpz_t(), pre_matriz[smooth_index[i]][j]);
-                    a *= p;
-                }
-                b *= x + smooth_index[i];
+                    
+                a *= smooth_index[i].second;
+                b *= smooth_index[i].first;
             }
         }
 
-        mpz_sqrt(a.get_mpz_t(), a.get_mpz_t());
-
-        if(a%n != b%n) break;
-
-        a = 1, b = 1;
+        a = std::sqrt(a);
+        
+        if((b - a) % n != 0 && (b + a) % n != 0)
+        {
+            std::cout << combination << '\n';
+            break;
+        }
     }
 
+    std::cout << b << " " << a << '\n';
+    std::cout << b - a << " " << a + b << '\n';
+    std::cout << (b - a) % n << " " << (a + b) % n << '\n';
     mpz_class f1 = mdc(b - a, n);
     mpz_class f2 = mdc(a + b, n);
     std::cout << "n = " << f1 << " * " << f2 << "\n";
+
+    
 }

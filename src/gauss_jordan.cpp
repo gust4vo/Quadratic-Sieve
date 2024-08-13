@@ -107,9 +107,9 @@ std::vector<std::vector<int>> gauss_jordan(std::vector<std::vector<unsigned long
     
     // std::cout << "\n";
 
-    std::vector<std::vector<int>> solution(rows - pivot_qtd + 1);
+    std::vector<std::vector<int>> solution(rows - pivot_qtd);
 
-    for (int i = 0; i < rows - pivot_qtd + 1; i++)
+    for (int i = 0; i < rows - pivot_qtd; i++)
         solution[i] = (gaus_reg[indices[i + pivot_qtd]]);
 
     return solution;
