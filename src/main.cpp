@@ -61,7 +61,7 @@ int main()
     std::vector<mpz_class> primes;
     std::cin >> n;
 
-    unsigned long int upperBound = exp(0.54*sqrt(log(n.get_d())*log(log(n.get_d()))));
+    unsigned long int upperBound = exp(0.58*sqrt(log(n.get_d())*log(log(n.get_d()))));
     
     GetPrimes(primes, upperBound);
     struct timespec initTime, endTime, diffTime;

@@ -3,7 +3,7 @@
 #include "cipolla.hpp"
 #include "ak_mod_n.hpp"
 
-mpz_class quadratic_residue(mpz_class a, mpz_class p)
+mpz_class quadratic_residue(const mpz_class &a, const mpz_class &p)
 {
     if (p == 2)
         return a % p;
@@ -16,21 +16,21 @@ mpz_class quadratic_residue(mpz_class a, mpz_class p)
 
     while (p_minus_one % 2 == 0)
     {
-        p_minus_one >= 1;
+        p_minus_one >>= 1;
         s++;
     }
 
-    mpz_class m = s;
+    mpz_class new_p = p, m = 0;
 
-    while (p_minus_one > 0)
+    while (new_p > 0)
     {
-        p_minus_one >= 1;
+        new_p >>= 1;
         m++;
     }
 
     if (s * (s - 1) > 8*m + 20)
         return cipolla(a, p);
     
-    return tonelli_shanks(a, p);
+    return tonelli_shanks(a, p, p_minus_one, s);
 
 }

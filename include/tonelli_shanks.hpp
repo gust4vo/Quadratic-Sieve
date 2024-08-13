@@ -3,6 +3,6 @@
 
 #include <gmpxx.h>
 
-mpz_class tonelli_shanks(const mpz_class& a, const mpz_class& p);
+mpz_class tonelli_shanks(const mpz_class& a, const mpz_class& p, const mpz_class &q, const mpz_class &s);
 
 #endif

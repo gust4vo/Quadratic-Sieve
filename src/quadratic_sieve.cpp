@@ -1,13 +1,13 @@
 #include "quadratic_sieve.hpp"
-#include "tonelli_shanks.hpp"
-#include "cipolla.hpp"
+#include "quadratic_residue.hpp"
 #include "mdc.hpp"
 #include "ak_mod_n.hpp"
 #include "gauss_jordan.hpp"
 #include <cmath>
 #include <iostream>
 
-void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
+void quadratic_sieve(const std::vector<mpz_class> &primes, const mpz_class &n) {
+    
     mpz_class x = (std::sqrt(n));
 
     if (x*x < n) x++;   
@@ -23,7 +23,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         }
     }
 
-    mpz_class tonelli_ans, ans;
+    mpz_class quadratic_ans, ans;
     size_t smooth_count = 0;
     std::vector<mpz_class> smooth_numbers(bases.size()+1), smooth_residue(bases.size()+1);
     mpz_class start = x; 
@@ -36,8 +36,8 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
             sieve_list[i] = (possible_smooth[i] * possible_smooth[i]) % n;
         }
 
-        tonelli_ans = cipolla(n, 2);
-        ans = tonelli_ans - (start % 2);
+        quadratic_ans = quadratic_residue(n, 2);
+        ans = quadratic_ans - (start % 2);
         for (size_t k = ans.get_ui(); k < primes.size()*6; k += 2) {
             while (sieve_list[k] % 2 == 0) {
                 sieve_list[k] /= 2;
@@ -45,8 +45,8 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         }
 
         for (size_t i = 1; i < bases.size(); i++) {
-            tonelli_ans = cipolla(n, bases[i]);
-            ans = (tonelli_ans - (start % bases[i])) % bases[i];
+            quadratic_ans = quadratic_residue(n, bases[i]);
+            ans = (quadratic_ans - (start % bases[i])) % bases[i];
             if (ans < 0) ans += bases[i];
 
             for (size_t k = ans.get_ui(); k < primes.size()*6; k += bases[i].get_ui()) {
@@ -55,7 +55,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
                 }
             }
 
-            ans = ((bases[i] - tonelli_ans) - (start % bases[i])) % bases[i];
+            ans = ((bases[i] - quadratic_ans) - (start % bases[i])) % bases[i];
             if (ans < 0) ans += bases[i];
 
             for (size_t k = ans.get_ui(); k < primes.size()*6; k += bases[i].get_ui()) {
@@ -108,6 +108,6 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
     }
 
     mpz_class f1 = mdc(b - a, n);
-    mpz_class f2 = mdc(a + b, n);
+    mpz_class f2 = n / f1;
     std::cout << "n = " << f1 << " * " << f2 << "\n";
 }
