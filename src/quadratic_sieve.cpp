@@ -70,7 +70,6 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
                 smooth_numbers[smooth_count] = possible_smooth[i];
                 smooth_residue[smooth_count] = (possible_smooth[i] * possible_smooth[i]) % n;
                 smooth_count++;
-                std::cout << smooth_count << " " << bases.size() + 1 << std::endl; 
                 if (smooth_count == bases.size() + 1) break;
             }
         }
@@ -85,7 +84,7 @@ void quadratic_sieve(std::vector<mpz_class> &primes, mpz_class n) {
         for(size_t j = 0; j < bases.size(); j++) {
             while (aux % bases[j] == 0) {
                 aux /= bases[j];
-                exponents[i][j]++;
+                exponents[i][j] = !exponents[i][j];
             }
         }
     }
