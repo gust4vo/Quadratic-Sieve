@@ -23,9 +23,11 @@ void quadratic_sieve(const std::vector<mpz_class> &primes, const mpz_class &n) {
         }
     }
 
+    std::cout << "\nPrimos na base : " << bases.size() << std::endl;
+
     mpz_class quadratic_ans, ans;
     size_t smooth_count = 0;
-    std::vector<mpz_class> smooth_numbers(bases.size()+1), smooth_residue(bases.size()+1);
+    std::vector<mpz_class> smooth_numbers(bases.size() + 1), smooth_residue(bases.size() + 1);
     mpz_class start = x; 
     
     while (smooth_count < (bases.size() + 1)) {
@@ -70,7 +72,10 @@ void quadratic_sieve(const std::vector<mpz_class> &primes, const mpz_class &n) {
                 smooth_numbers[smooth_count] = possible_smooth[i];
                 smooth_residue[smooth_count] = (possible_smooth[i] * possible_smooth[i]) % n;
                 smooth_count++;
-                if (smooth_count == bases.size() + 1) break;
+                if (smooth_count == bases.size() + 1) {
+                    std::cout << "\nIntervalo de indices 'j' utilizado: [0, " << (start-x)+primes.size()*6 << "]." << std::endl;
+                    break;
+                }
             }
         }
 
@@ -106,8 +111,8 @@ void quadratic_sieve(const std::vector<mpz_class> &primes, const mpz_class &n) {
 
         a = 1, b = 1;
     }
-
+    std::cout << "\n" << a%n << "² ≡ " << b%n << "² (mod " << n << ")" << std::endl;
     mpz_class f1 = mdc(b - a, n);
     mpz_class f2 = n / f1;
-    std::cout << "n = " << f1 << " * " << f2 << "\n";
+    std::cout << "\nN = " << f1 << " * " << f2 << "\n";
 }
