@@ -7,7 +7,7 @@
 #include <iostream>
 
 void quadratic_sieve(const std::vector<mpz_class> &primes, const mpz_class &n) {
-    
+
     mpz_class x = (std::sqrt(n));
 
     if (x*x < n) x++;   
@@ -39,7 +39,7 @@ void quadratic_sieve(const std::vector<mpz_class> &primes, const mpz_class &n) {
         quadratic_ans = quadratic_residue(n, 2);
         ans = quadratic_ans - (start % 2);
         for (size_t k = ans.get_ui(); k < primes.size()*6; k += 2) {
-            while (sieve_list[k] % 2 == 0) {
+            while (sieve_list[k] % 2 == 0 && sieve_list[k] != 0) {
                 sieve_list[k] /= 2;
             }
         }
@@ -50,7 +50,7 @@ void quadratic_sieve(const std::vector<mpz_class> &primes, const mpz_class &n) {
             if (ans < 0) ans += bases[i];
 
             for (size_t k = ans.get_ui(); k < primes.size()*6; k += bases[i].get_ui()) {
-                while (sieve_list[k] % bases[i] == 0) {
+                while (sieve_list[k] % bases[i] == 0 && sieve_list[k] != 0) {
                     sieve_list[k] /= bases[i];
                 }
             }
@@ -59,7 +59,7 @@ void quadratic_sieve(const std::vector<mpz_class> &primes, const mpz_class &n) {
             if (ans < 0) ans += bases[i];
 
             for (size_t k = ans.get_ui(); k < primes.size()*6; k += bases[i].get_ui()) {
-                while (sieve_list[k] % bases[i] == 0) {
+                while (sieve_list[k] % bases[i] == 0 && sieve_list[k] != 0) {
                     sieve_list[k] /= bases[i];
                 }
             }
