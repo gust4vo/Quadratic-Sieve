@@ -20,50 +20,25 @@ void calculateTimeDifference(struct timespec t1, struct timespec t2, struct time
     }
 }
 
-#ifdef TEST_TONELLI_CIPOLLAA
 
 int main()
 {
-    mpz_class n, p;
-    std::cin >> n >> p;
+    std::cout << "===============================================================================================================\n";
+    std::cout << "                                                 CRIVO QUADRÁTICO                                              \n";
+    std::cout << "===============================================================================================================\n\n";
 
-    struct timespec initTime, endTime, diffTime;
-
-    // Tonelli Shanks tests
-
-    clock_gettime(CLOCK_MONOTONIC, &initTime);
-    mpz_class ans2 = tonelli_shanks(n, p);
-    clock_gettime(CLOCK_MONOTONIC, &endTime);
-
-    calculateTimeDifference(initTime, endTime, &diffTime);
-
-    std::cout << "Tonelli-Shanks: "  << ans2 << '\n';
-    std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
-
-    // Cipolla tests
-    
-    clock_gettime(CLOCK_MONOTONIC, &initTime);
-    ans2 = cipolla(n, p);
-    clock_gettime(CLOCK_MONOTONIC, &endTime);
-
-    calculateTimeDifference(initTime, endTime, &diffTime);
-    std::cout << "Cipolla: " << ans2 << '\n';
-    std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
-}
-
-#endif
-
-#ifdef QUADRATIC_SIEVE
-
-int main()
-{
     mpz_class n;
     std::vector<mpz_class> primes;
-    std::cin >> n;
+    std::cout << "N = "; std::cin >> n;
 
-    unsigned long int upperBound = exp(0.58*sqrt(log(n.get_d())*log(log(n.get_d()))));
-    
+    unsigned long int upperBound = exp(0.58 * sqrt(log(n.get_d()) * log(log(n.get_d()))));
+
+    std::cout << "\nLimitante superior (B) = " << upperBound << std::endl;
+
     GetPrimes(primes, upperBound);
+
+    std::cout << "\nQuantidade de primos encontrados : " << primes.size() << std::endl;
+
     struct timespec initTime, endTime, diffTime;
     clock_gettime(CLOCK_MONOTONIC, &initTime);
     quadratic_sieve(primes, n);
@@ -71,9 +46,7 @@ int main()
 
     calculateTimeDifference(initTime, endTime, &diffTime);
 
+    std::cout << "\nTempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s\n\n";
 
-    std::cout << "Tempo levado: " << diffTime.tv_sec << "." << std::setw(9) << std::setfill('0') << diffTime.tv_nsec << "s" << std::endl;
-
+    return 0;
 }
-
-#endif
